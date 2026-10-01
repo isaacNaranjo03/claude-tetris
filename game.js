@@ -169,7 +169,7 @@ function drawBlock(context, x, y, colorIndex, size, alpha) {
 }
 
 function drawGrid() {
-  ctx.strokeStyle = '#22222e';
+  ctx.strokeStyle = gridColor;
   ctx.lineWidth = 0.5;
   for (let c = 1; c < COLS; c++) {
     ctx.beginPath();
@@ -301,4 +301,23 @@ document.addEventListener('keydown', e => {
 
 restartBtn.addEventListener('click', init);
 
+// ---- Theme ----
+const themeToggle = document.getElementById('theme-toggle');
+let gridColor = '#22222e';
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  themeToggle.setAttribute('aria-checked', theme === 'light');
+  gridColor = getComputedStyle(document.documentElement).getPropertyValue('--grid').trim();
+  if (paused || gameOver) draw(); // the loop isn't repainting
+}
+
+themeToggle.addEventListener('click', () => {
+  const theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+  localStorage.setItem('theme', theme);
+  applyTheme(theme);
+  themeToggle.blur(); // keep focus off the button (Space would re-trigger it)
+});
+
 init();
+applyTheme(document.documentElement.dataset.theme);
